@@ -10,24 +10,21 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from bookmarks.forms import *
 
+
 def register_page(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = User.objects.create_user(
-                username = form.clean_data('username'),
-                password = form.clean_data('password1'),
-                email = form.clean_data('email')
+                username=form.clean_data('username'),
+                password=form.clean_data('password1'),
+                email=form.clean_data('email')
             )
-            return HttpResponseRedirect('/')
-        else:
-            form = RegistrationForm()
-        variables = RequestContext(request, {
-            'form': form
-        })
-        return render_to_response(
-            'registration/register.html',
-        )
+            return HttpResponseRedirect('/register/success/')
+    else:
+        form = RegistrationForm()
+    variables = RequestContext(request, dict(form=form))
+    return render_to_response('registration/register.html', variables)
 
 
 def logout_page(request):

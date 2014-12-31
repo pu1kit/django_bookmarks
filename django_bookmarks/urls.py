@@ -1,5 +1,7 @@
+from django.views.generic import TemplateView
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
+
 from bookmarks.views import *
 import os.path
 
@@ -16,5 +18,8 @@ urlpatterns = patterns('',
                        url(r'^logout/$', logout_page),
                        url(r'^site_media/(?P<path>.*)$','django.views.static.serve',
                            {'document_root': site_media}),
+                       url(r'^register/$',register_page),
+                       url(r'register/success/$', TemplateView.as_view(template_name=
+                           'registration/register_success.html')),
 
                        )
