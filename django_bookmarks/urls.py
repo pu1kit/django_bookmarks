@@ -12,8 +12,10 @@ site_media = os.path.join(
 urlpatterns = patterns('',
                        # Examples:
                        # url(r'^$', 'django_bookmarks.views.home', name='home'),
+                       #Browsing
                        url(r'^$', main_page),
                        url(r'^user/(\w+)/$', user_page),
+                       #Session Management
                        url(r'^login/$', 'django.contrib.auth.views.login'),
                        url(r'^logout/$', logout_page),
                        url(r'^site_media/(?P<path>.*)$','django.views.static.serve',
@@ -21,5 +23,7 @@ urlpatterns = patterns('',
                        url(r'^register/$',register_page),
                        url(r'register/success/$', TemplateView.as_view(template_name=
                            'registration/register_success.html')),
+                       #Account Management
+                       url(r'^save/$', bookmark_save_page),
 
                        )

@@ -7,8 +7,9 @@ from django.template.loader import get_template
 from django.contrib.auth.models import User
 from django.contrib.auth import logout
 from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response,redirect,render
 from bookmarks.forms import *
+from bookmarks.models import *
 
 
 def register_page(request):
@@ -49,3 +50,38 @@ def user_page(request, username):
         'bookmarks': bookmarks
     })
     return render_to_response('user_page.html', variables)
+
+
+def bookmark_save_page(request):
+    if request.method == 'POST':
+        form = BookmarkSaveForm(request)
+        if form.is_valid():
+            # create or get link.
+            link, dummy = Link.objects.get_or_create(
+                url=form.cleaned_data['url']
+            )
+            # create or get bookmark.
+            bookmark, created = Bookmark.objects.get_or_create(
+                user=request.user,
+                link=link
+            )
+            # if bookmark is being updated, clear the old tag list
+            if not created:
+                bookmark.tag_set.clear()
+            # create new tag list
+            tag_names = form.cleaned_data['tags'].split()
+            for tag_name in tag_names:
+                tag, dummy = Tag.objects.get_or_create(name=tag_name)
+                bookmark.tag_set.add()
+            # save bookmark to database
+            bookmark.save()
+            return HttpResponseRedirect(
+                '/user/%s/' % request.user.username
+            )
+    else:
+        form = BookmarkSaveForm()
+
+    variables = RequestContext(request, {
+        'form': form
+        })
+    return render_to_response('bookmark_save.html', variables)
